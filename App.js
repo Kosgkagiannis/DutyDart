@@ -10,8 +10,7 @@ const db = openDatabase()
 const Tab = createBottomTabNavigator()
 
 export default function App() {
-  const [text, setText] = useState(null)
-  const [forceUpdate, forceUpdateId] = useForceUpdate()
+  const [forceUpdate] = useForceUpdate()
 
   useEffect(() => {
     db.transaction((tx) => {
