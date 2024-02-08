@@ -21,7 +21,6 @@ export function Items({ done: doneHeading, onPressItem }) {
     fetchItems(doneHeading, setItems)
   }, [forceUpdate])
 
-  const heading = doneHeading ? "Completed" : "Todo"
 
   const handleEdit = (id, value) => {
     setEditingItem(id)
@@ -58,10 +57,20 @@ export function Items({ done: doneHeading, onPressItem }) {
   const handleMarkAsCompleted = (id) => {
     db.transaction(
       (tx) => {
-        tx.executeSql(`UPDATE items SET done = 1 WHERE id = ?;`, [id])
+        tx.executeSql(
+          `UPDATE items SET done = 1 WHERE id = ?;`,
+          [id],
+          (_, { rowsAffected }) => {
+            if (rowsAffected > 0) {
+              setForceUpdate((prev) => prev + 1)
+            }
+          }
+        )
       },
       null,
-      () => setForceUpdate((prev) => prev + 1)
+      () => {
+        console.log("Marked as completed successfully")
+      }
     )
   }
 
@@ -102,7 +111,6 @@ export function Items({ done: doneHeading, onPressItem }) {
 
   return (
     <View>
-      <Text>{heading}</Text>
       {items.map(({ id, done, value }) => (
         <View key={id}>
           {editingItem === id ? (

@@ -54,7 +54,6 @@ const CompletedTasksScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Completed Tasks</Text>
       <ScrollView>
         {completedTasks.map(({ id, value }) => (
           <View style={styles.taskContainer} key={id}>

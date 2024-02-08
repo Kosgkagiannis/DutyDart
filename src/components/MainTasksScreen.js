@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
   StyleSheet,
 } from "react-native"
@@ -44,16 +43,18 @@ const MainTasksScreen = ({ navigation }) => {
   }
 
   return (
-    <View>
-      <Text>Main Tasks</Text>
-      <TextInput
-        onChangeText={(text) => setText(text)}
-        placeholder="Add Task"
-        value={text}
-      />
-      <TouchableOpacity style={styles.addButton} onPress={() => add(text)}>
-        <Text style={styles.buttonText}>+</Text>
-      </TouchableOpacity>
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          onChangeText={(text) => setText(text)}
+          placeholder="Add Task"
+          value={text}
+        />
+        <TouchableOpacity style={styles.addButton} onPress={() => add(text)}>
+          <Text style={styles.buttonText}>+</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView>
         <Items
           key={`forceupdate-todo-${forceUpdateId}`}
@@ -75,6 +76,23 @@ const MainTasksScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+  },
   addButton: {
     backgroundColor: "#007bff",
     borderRadius: 20,
@@ -82,7 +100,6 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
