@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react"
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Button,
-  Alert,
-} from "react-native"
+import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native"
 import { fetchItems } from "../../database"
 import db from "../../database"
+import Icon from "react-native-vector-icons/FontAwesome"
 
 export function Items({ done: doneHeading, onPressItem }) {
   const [items, setItems] = useState(null)
@@ -108,59 +102,81 @@ export function Items({ done: doneHeading, onPressItem }) {
   }
 
   return (
-    <View>
+    <View style={styles.container}>
       {items.map(({ id, done, value }) => (
-        <View key={id}>
+        <View key={id} style={styles.itemContainer}>
           {editingItem === id ? (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <TextInput
-                style={{
-                  flex: 1,
-                  borderWidth: 1,
-                  borderColor: "#000",
-                  padding: 8,
-                  marginRight: 8,
-                }}
+                style={styles.input}
                 value={editedText}
                 onChangeText={setEditedText}
               />
               <Button title="Save" onPress={() => handleSaveEdit(id)} />
             </View>
           ) : (
-            <TouchableOpacity
-              onPress={() => onPressItem && onPressItem(id)}
-              style={{
-                backgroundColor: done ? "#1c9963" : "#fff",
-                borderColor: "#000",
-                borderWidth: 1,
-                padding: 8,
-                marginBottom: 8,
-              }}
+            <View
+              style={[
+                styles.touchable,
+                { backgroundColor: done ? "#1c9963" : "#fff" },
+              ]}
             >
-              <Text style={{ color: done ? "#fff" : "#000" }}>{value}</Text>
-              <Button
-                title="Edit"
-                onPress={() => handleEdit(id, value)}
-                style={{ marginTop: 8 }}
-              />
-              {!done && (
-                <>
-                  <Button
-                    title="Mark as completed"
-                    onPress={() => handleMarkAsCompleted(id)}
-                    style={{ marginTop: 8 }}
-                  />
-                  <Button
-                    title="Delete"
-                    onPress={() => handleDeleteConfirmation(id)}
-                    style={{ marginTop: 8 }}
-                  />
-                </>
-              )}
-            </TouchableOpacity>
+              <Text style={styles.textContainer}>{value}</Text>
+              <View style={styles.buttonContainer}>
+                <Button title="Edit" onPress={() => handleEdit(id, value)} />
+                {!done && (
+                  <>
+                    <Button
+                      title="Mark as completed"
+                      onPress={() => handleMarkAsCompleted(id)}
+                      color="green"
+                    />
+                    <Icon
+                      name="trash"
+                      size={20}
+                      color="red"
+                      onPress={() => handleDeleteConfirmation(id)}
+                    />
+                  </>
+                )}
+              </View>
+            </View>
           )}
         </View>
       ))}
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingVertical: 10,
+  },
+  itemContainer: {
+    marginBottom: 10,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#000",
+    padding: 8,
+    marginRight: 8,
+  },
+  touchable: {
+    borderWidth: 1,
+    padding: 8,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  textContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#000",
+    paddingVertical: 12,
+  },
+})
+
+export default Items

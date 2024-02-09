@@ -17,12 +17,12 @@ export const openDatabase = () => {
   return db
 }
 
-export const fetchItems = (doneHeading, setItems) => {
+export const fetchItems = (done, setItems) => {
   db.transaction((tx) => {
     tx.executeSql(
-      `select * from items where done = ?;`,
-      [doneHeading ? 1 : 0],
-      (_, { rows: { _array } }) => setItems(_array)
+      `SELECT * FROM items WHERE done = ? ORDER BY id DESC;`,
+      [done ? 1 : 0],
+      (_, { rows }) => setItems(rows._array)
     )
   })
 }
