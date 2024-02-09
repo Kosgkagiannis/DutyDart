@@ -1,17 +1,13 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { View, Text, ScrollView, Button, StyleSheet, Alert } from "react-native"
 import { openDatabase } from "../../database"
 
 const db = openDatabase()
 
-const CompletedTasksScreen = () => {
+const CompletedTasksScreen = ({ navigation }) => {
   const [completedTasks, setCompletedTasks] = useState([])
 
-  useEffect(() => {
-    fetchCompletedTasks()
-  }, [])
-
-  const fetchCompletedTasks = () => {
+  const fetchCompletedTasks = useCallback(() => {
     db.transaction((tx) => {
       tx.executeSql(
         `select * from items where done = ?;`,
@@ -19,7 +15,15 @@ const CompletedTasksScreen = () => {
         (_, { rows: { _array } }) => setCompletedTasks(_array)
       )
     })
-  }
+  }, [])
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchCompletedTasks()
+    })
+
+    return unsubscribe
+  }, [navigation, fetchCompletedTasks])
 
   const handleDeleteConfirmation = (id) => {
     Alert.alert(
@@ -74,11 +78,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 16,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
   },
   taskContainer: {
     flexDirection: "row",
