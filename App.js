@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { NavigationContainer } from "@react-navigation/native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import { Ionicons } from "@expo/vector-icons" // Import Ionicons from Expo
+import { Ionicons } from "@expo/vector-icons"
 import MainTasksScreen from "./src/components/MainTasksScreen"
 import CompletedTasksScreen from "./src/components/CompletedTasksScreen"
 import { openDatabase } from "./database"
@@ -15,7 +15,7 @@ export default function App() {
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        "create table if not exists items (id integer primary key not null, done int, value text);"
+        "create table if not exists items (id integer primary key not null, done int, value text, date text, time text);"
       )
     })
   }, [])
@@ -25,17 +25,29 @@ export default function App() {
       return false
     }
 
+    const currentDate = moment().format("YYYY-MM-DD")
+    const currentTime = moment().format("HH:mm:ss")
+
     db.transaction(
       (tx) => {
-        tx.executeSql("insert into items (done, value) values (0, ?)", [text])
-        tx.executeSql("select * from items", [], (_, { rows }) =>
-          console.log(JSON.stringify(rows))
+        tx.executeSql(
+          "INSERT INTO items (done, value, date, time) VALUES (0, ?, ?, ?)",
+          [text, currentDate, currentTime],
+          () => {
+            console.log("Task added successfully")
+          },
+          (_, error) => {
+            console.log("Error adding task:", error)
+          }
         )
       },
       null,
       forceUpdate
     )
+
+    setText(null)
   }
+
 
   return (
     <NavigationContainer>

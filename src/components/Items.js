@@ -103,7 +103,7 @@ export function Items({ done: doneHeading, onPressItem }) {
 
   return (
     <View style={styles.container}>
-      {items.map(({ id, done, value }) => (
+      {items.map(({ id, done, value, date, time }) => (
         <View key={id} style={styles.itemContainer}>
           {editingItem === id ? (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -121,7 +121,10 @@ export function Items({ done: doneHeading, onPressItem }) {
                 { backgroundColor: done ? "#1c9963" : "#fff" },
               ]}
             >
-              <Text style={styles.textContainer}>{value}</Text>
+              <Text style={styles.textContainer}>
+                {value} - {date} {time}
+              </Text>
+
               <View style={styles.buttonContainer}>
                 <Button title="Edit" onPress={() => handleEdit(id, value)} />
                 {!done && (
