@@ -7,7 +7,7 @@ import {
   Button,
   Alert,
 } from "react-native"
-import { fetchItems, openDatabase } from "../../database"
+import { fetchItems } from "../../database"
 import db from "../../database"
 
 export function Items({ done: doneHeading, onPressItem }) {
@@ -15,12 +15,10 @@ export function Items({ done: doneHeading, onPressItem }) {
   const [editingItem, setEditingItem] = useState(null)
   const [editedText, setEditedText] = useState("")
   const [forceUpdate, setForceUpdate] = useState(0)
-  const [deleteConfirmationId, setDeleteConfirmationId] = useState(null)
 
   useEffect(() => {
     fetchItems(doneHeading, setItems)
   }, [forceUpdate])
-
 
   const handleEdit = (id, value) => {
     setEditingItem(id)
