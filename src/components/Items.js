@@ -1,34 +1,49 @@
 import React, { useState, useEffect } from "react"
-import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native"
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  StyleSheet,
+  Image,
+} from "react-native"
 import { fetchItems } from "../../database"
 import db from "../../database"
 import Icon from "react-native-vector-icons/FontAwesome"
+import FlagGreen from "../img/flag-green.png"
+import FlagYellow from "../img/flag-yellow.png"
+import FlagRed from "../img/flag-red.png"
+import RNPickerSelect from "react-native-picker-select"
 
 export function Items({ done: doneHeading, onPressItem }) {
   const [items, setItems] = useState(null)
   const [editingItem, setEditingItem] = useState(null)
   const [editedText, setEditedText] = useState("")
+  const [editedPriority, setEditedPriority] = useState("")
   const [forceUpdate, setForceUpdate] = useState(0)
 
   useEffect(() => {
     fetchItems(doneHeading, setItems)
   }, [forceUpdate])
 
-  const handleEdit = (id, value) => {
+  const handleEdit = (id, value, priority) => {
     setEditingItem(id)
     setEditedText(value)
+    setEditedPriority(priority)
   }
 
   const handleSaveEdit = (id) => {
     console.log("Save edited text:", editedText)
+    console.log("Save edited priority:", editedPriority)
 
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "UPDATE items SET value = ? WHERE id = ?",
-          [editedText, id],
+          "UPDATE items SET value = ?, priority = ? WHERE id = ?",
+          [editedText, editedPriority, id],
           (_, { rows }) => {
-            console.log("Task name updated successfully")
+            console.log("Task name and priority updated successfully")
           }
         )
       },
@@ -38,12 +53,15 @@ export function Items({ done: doneHeading, onPressItem }) {
 
     setItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, value: editedText } : item
+        item.id === id
+          ? { ...item, value: editedText, priority: editedPriority }
+          : item
       )
     )
 
     setEditingItem(null)
     setEditedText("")
+    setEditedPriority("")
   }
 
   const handleMarkAsCompleted = (id) => {
@@ -101,6 +119,19 @@ export function Items({ done: doneHeading, onPressItem }) {
     return null
   }
 
+  const getPriorityBorderColor = (priority) => {
+    switch (priority) {
+      case "Low":
+        return "green"
+      case "Medium":
+        return "orange"
+      case "High":
+        return "red"
+      default:
+        return "#000"
+    }
+  }
+
   return (
     <View style={styles.container}>
       {items.map(({ id, done, value, date, time, priority }) => (
@@ -112,6 +143,19 @@ export function Items({ done: doneHeading, onPressItem }) {
                 value={editedText}
                 onChangeText={setEditedText}
               />
+              <View style={{ flex: 1 }}>
+                <RNPickerSelect
+                  style={styles.input}
+                  onValueChange={(value) => setEditedPriority(value)}
+                  items={[
+                    { label: "Low", value: "Low" },
+                    { label: "Medium", value: "Medium" },
+                    { label: "High", value: "High" },
+                  ]}
+                  value={editedPriority}
+                  placeholder={{ label: "Priority", value: null }}
+                />
+              </View>
               <Button title="Save" onPress={() => handleSaveEdit(id)} />
             </View>
           ) : (
@@ -121,12 +165,35 @@ export function Items({ done: doneHeading, onPressItem }) {
                 { backgroundColor: done ? "#1c9963" : "#fff" },
               ]}
             >
+              <Text style={styles.textContainer}>{value}</Text>
               <Text style={styles.textContainer}>
-                {value} - {date} {time} Priority: {priority}
+                {date} {time}
               </Text>
+              {priority && (
+                <View
+                  style={[
+                    styles.textContainer,
+                    { flexDirection: "row", alignItems: "center" },
+                  ]}
+                >
+                  <Text>Priority: {priority}</Text>
+                  {priority === "Low" && (
+                    <Image source={FlagGreen} style={styles.flagImage} />
+                  )}
+                  {priority === "Medium" && (
+                    <Image source={FlagYellow} style={styles.flagImage} />
+                  )}
+                  {priority === "High" && (
+                    <Image source={FlagRed} style={styles.flagImage} />
+                  )}
+                </View>
+              )}
 
               <View style={styles.buttonContainer}>
-                <Button title="Edit" onPress={() => handleEdit(id, value)} />
+                <Button
+                  title="Edit"
+                  onPress={() => handleEdit(id, value, priority)}
+                />
                 {!done && (
                   <>
                     <Button
@@ -179,6 +246,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#000",
     paddingVertical: 12,
+  },
+  flagImage: {
+    width: 20,
+    height: 20,
+    marginLeft: 5,
   },
 })
 

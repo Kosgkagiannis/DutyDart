@@ -17,7 +17,7 @@ const db = openDatabase()
 const MainTasksScreen = ({ navigation }) => {
   const [text, setText] = useState(null)
   const [forceUpdate, forceUpdateId] = useForceUpdate()
-  const [priority, setPriority] = useState("normal")
+  const [priority, setPriority] = useState("")
 
   useEffect(() => {
     db.transaction((tx) => {
@@ -53,10 +53,11 @@ const MainTasksScreen = ({ navigation }) => {
     )
 
     setText(null)
+    setPriority(null)
   }
 
   const priorityOptions = [
-    { label: "Normal", value: "Normal" },
+    { label: "Low", value: "Low" },
     { label: "Medium", value: "Medium" },
     { label: "High", value: "High" },
   ]
@@ -70,11 +71,11 @@ const MainTasksScreen = ({ navigation }) => {
           placeholder="Add Task"
           value={text}
         />
-        <View style={{ flex: 1 }}>
+        <View style={styles.priorityContainer}>
           <RNPickerSelect
             onValueChange={(value) => setPriority(value)}
             items={priorityOptions}
-            placeholder={{ label: "Select Priority", value: null }}
+            placeholder={{ label: "Priority", value: null }}
             value={priority}
           />
         </View>
@@ -107,6 +108,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
+  priorityContainer: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 5,
+    marginRight: 2,
+  },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -118,6 +126,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 5,
     padding: 10,
+    height: 55,
     marginRight: 10,
   },
   addButton: {
