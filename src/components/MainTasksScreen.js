@@ -10,17 +10,19 @@ import {
 import { Items } from "../components/Items"
 import moment from "moment"
 import { openDatabase } from "../../database"
+import RNPickerSelect from "react-native-picker-select"
 
 const db = openDatabase()
 
 const MainTasksScreen = ({ navigation }) => {
   const [text, setText] = useState(null)
   const [forceUpdate, forceUpdateId] = useForceUpdate()
+  const [priority, setPriority] = useState("normal")
 
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        "create table if not exists items (id integer primary key not null, done int, value text, date text, time text);"
+        "create table if not exists items (id integer primary key not null, done int, value text, date text, time text, priority text);"
       )
     })
   }, [])
@@ -36,8 +38,8 @@ const MainTasksScreen = ({ navigation }) => {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "INSERT INTO items (done, value, date, time) VALUES (0, ?, ?, ?)",
-          [text, currentDate, currentTime],
+          "INSERT INTO items (done, value, date, time, priority) VALUES (0, ?, ?, ?, ?)",
+          [text, currentDate, currentTime, priority],
           () => {
             console.log("Task added successfully")
           },
@@ -53,6 +55,12 @@ const MainTasksScreen = ({ navigation }) => {
     setText(null)
   }
 
+  const priorityOptions = [
+    { label: "Normal", value: "Normal" },
+    { label: "Medium", value: "Medium" },
+    { label: "High", value: "High" },
+  ]
+
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -62,6 +70,14 @@ const MainTasksScreen = ({ navigation }) => {
           placeholder="Add Task"
           value={text}
         />
+        <View style={{ flex: 1 }}>
+          <RNPickerSelect
+            onValueChange={(value) => setPriority(value)}
+            items={priorityOptions}
+            placeholder={{ label: "Select Priority", value: null }}
+            value={priority}
+          />
+        </View>
         <TouchableOpacity style={styles.addButton} onPress={() => add(text)}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>

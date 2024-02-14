@@ -15,7 +15,7 @@ export default function App() {
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        "create table if not exists items (id integer primary key not null, done int, value text, date text, time text);"
+        "create table if not exists items (id integer primary key not null, done int, value text, date text, time text, priority text);"
       )
     })
   }, [])
@@ -31,8 +31,8 @@ export default function App() {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "INSERT INTO items (done, value, date, time) VALUES (0, ?, ?, ?)",
-          [text, currentDate, currentTime],
+          "INSERT INTO items (done, value, date, time, priority) VALUES (0, ?, ?, ?, ?)",
+          [text, currentDate, currentTime, priority],
           () => {
             console.log("Task added successfully")
           },

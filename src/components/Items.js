@@ -103,7 +103,7 @@ export function Items({ done: doneHeading, onPressItem }) {
 
   return (
     <View style={styles.container}>
-      {items.map(({ id, done, value, date, time }) => (
+      {items.map(({ id, done, value, date, time, priority }) => (
         <View key={id} style={styles.itemContainer}>
           {editingItem === id ? (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -122,7 +122,7 @@ export function Items({ done: doneHeading, onPressItem }) {
               ]}
             >
               <Text style={styles.textContainer}>
-                {value} - {date} {time}
+                {value} - {date} {time} Priority: {priority}
               </Text>
 
               <View style={styles.buttonContainer}>
