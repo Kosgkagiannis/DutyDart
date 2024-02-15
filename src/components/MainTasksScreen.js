@@ -11,6 +11,7 @@ import { Items } from "../components/Items"
 import moment from "moment"
 import { openDatabase } from "../../database"
 import RNPickerSelect from "react-native-picker-select"
+import Icon from "react-native-vector-icons/FontAwesome"
 
 const db = openDatabase()
 
@@ -23,6 +24,7 @@ const MainTasksScreen = ({ navigation }) => {
   const [sortByPriorityAscending, setSortByPriorityAscending] = useState(false)
   const [sortByPriorityDescending, setSortByPriorityDescending] =
     useState(false)
+  const [isSortExpanded, setIsSortExpanded] = useState(false)
 
   useEffect(() => {
     db.transaction((tx) => {
@@ -31,6 +33,12 @@ const MainTasksScreen = ({ navigation }) => {
       )
     })
   }, [])
+
+
+  const toggleSortExpansion = () => {
+    setIsSortExpanded(!isSortExpanded)
+  }
+
   const toggleSortByDateAscending = () => {
     setSortByDateAscending(true)
     setSortByDateDescending(false)
@@ -115,44 +123,60 @@ const MainTasksScreen = ({ navigation }) => {
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.sortButtonsContainer}>
-        <TouchableOpacity
-          style={[
-            styles.sortButton,
-            sortByDateAscending && styles.activeSortButton,
-          ]}
-          onPress={toggleSortByDateAscending}
-        >
-          <Text style={styles.sortButtonText}>Sort by Date Ascending</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.sortButton,
-            sortByDateDescending && styles.activeSortButton,
-          ]}
-          onPress={toggleSortByDateDescending}
-        >
-          <Text style={styles.sortButtonText}>Sort by Date Descending</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.sortButton,
-            sortByPriorityAscending && styles.activeSortButton,
-          ]}
-          onPress={toggleSortByPriorityAscending}
-        >
-          <Text style={styles.sortButtonText}>Sort by Priority Ascending</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.sortButton,
-            sortByPriorityDescending && styles.activeSortButton,
-          ]}
-          onPress={toggleSortByPriorityDescending}
-        >
-          <Text style={styles.sortButtonText}>Sort by Priority Descending</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={styles.filterButton}
+        onPress={toggleSortExpansion}
+      >
+        <Icon name="filter" size={30} color="#007bff" />
+      </TouchableOpacity>
+      {isSortExpanded && (
+        <View style={styles.sortButtonsContainer}>
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortByDateAscending && styles.activeSortButton,
+            ]}
+            onPress={toggleSortByDateAscending}
+          >
+            <Text style={styles.sortButtonText}>Sort by Date Ascending </Text>
+            <Icon name="arrow-up" size={15} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortByDateDescending && styles.activeSortButton,
+            ]}
+            onPress={toggleSortByDateDescending}
+          >
+            <Text style={styles.sortButtonText}>Sort by Date Descending</Text>
+            <Icon name="arrow-down" size={15} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortByPriorityAscending && styles.activeSortButton,
+            ]}
+            onPress={toggleSortByPriorityAscending}
+          >
+            <Text style={styles.sortButtonText}>
+              Sort by Priority Ascending
+            </Text>
+            <Icon name="arrow-up" size={15} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortByPriorityDescending && styles.activeSortButton,
+            ]}
+            onPress={toggleSortByPriorityDescending}
+          >
+            <Text style={styles.sortButtonText}>
+              Sort by Priority Descending
+            </Text>
+            <Icon name="arrow-down" size={15} color="white" />
+          </TouchableOpacity>
+        </View>
+      )}
       <ScrollView>
         <Items
           key={`forceupdate-todo-${forceUpdateId}`}
@@ -226,6 +250,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#007bff",
     padding: 10,
     borderRadius: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    justifyContent: "center",
   },
   sortButtonText: {
     color: "#fff",
