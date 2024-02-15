@@ -18,6 +18,11 @@ const MainTasksScreen = ({ navigation }) => {
   const [text, setText] = useState(null)
   const [forceUpdate, forceUpdateId] = useForceUpdate()
   const [priority, setPriority] = useState("")
+  const [sortByDateAscending, setSortByDateAscending] = useState(false)
+  const [sortByDateDescending, setSortByDateDescending] = useState(false)
+  const [sortByPriorityAscending, setSortByPriorityAscending] = useState(false)
+  const [sortByPriorityDescending, setSortByPriorityDescending] =
+    useState(false)
 
   useEffect(() => {
     db.transaction((tx) => {
@@ -26,6 +31,33 @@ const MainTasksScreen = ({ navigation }) => {
       )
     })
   }, [])
+  const toggleSortByDateAscending = () => {
+    setSortByDateAscending(true)
+    setSortByDateDescending(false)
+    setSortByPriorityAscending(false)
+    setSortByPriorityDescending(false)
+  }
+
+  const toggleSortByDateDescending = () => {
+    setSortByDateDescending(true)
+    setSortByDateAscending(false)
+    setSortByPriorityAscending(false)
+    setSortByPriorityDescending(false)
+  }
+
+  const toggleSortByPriorityAscending = () => {
+    setSortByPriorityAscending(true)
+    setSortByPriorityDescending(false)
+    setSortByDateAscending(false)
+    setSortByDateDescending(false)
+  }
+
+  const toggleSortByPriorityDescending = () => {
+    setSortByPriorityDescending(true)
+    setSortByPriorityAscending(false)
+    setSortByDateAscending(false)
+    setSortByDateDescending(false)
+  }
 
   const add = (text) => {
     if (text === null || text === "") {
@@ -83,6 +115,44 @@ const MainTasksScreen = ({ navigation }) => {
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.sortButtonsContainer}>
+        <TouchableOpacity
+          style={[
+            styles.sortButton,
+            sortByDateAscending && styles.activeSortButton,
+          ]}
+          onPress={toggleSortByDateAscending}
+        >
+          <Text style={styles.sortButtonText}>Sort by Date Ascending</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.sortButton,
+            sortByDateDescending && styles.activeSortButton,
+          ]}
+          onPress={toggleSortByDateDescending}
+        >
+          <Text style={styles.sortButtonText}>Sort by Date Descending</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.sortButton,
+            sortByPriorityAscending && styles.activeSortButton,
+          ]}
+          onPress={toggleSortByPriorityAscending}
+        >
+          <Text style={styles.sortButtonText}>Sort by Priority Ascending</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.sortButton,
+            sortByPriorityDescending && styles.activeSortButton,
+          ]}
+          onPress={toggleSortByPriorityDescending}
+        >
+          <Text style={styles.sortButtonText}>Sort by Priority Descending</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView>
         <Items
           key={`forceupdate-todo-${forceUpdateId}`}
@@ -97,6 +167,10 @@ const MainTasksScreen = ({ navigation }) => {
             )
           }
           navigation={navigation}
+          sortByDateAscending={sortByDateAscending}
+          sortByDateDescending={sortByDateDescending}
+          sortByPriorityAscending={sortByPriorityAscending}
+          sortByPriorityDescending={sortByPriorityDescending}
         />
       </ScrollView>
     </View>
@@ -111,8 +185,8 @@ const styles = StyleSheet.create({
   priorityContainer: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "black",
     borderRadius: 5,
+    borderColor: "#ccc",
     marginRight: 2,
   },
   inputContainer: {
@@ -141,6 +215,24 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
+  },
+  sortButtonsContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 5,
+    marginBottom: 10,
+  },
+  sortButton: {
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 5,
+  },
+  sortButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  activeSortButton: {
+    backgroundColor: "#0056b3",
   },
 })
 

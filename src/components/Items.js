@@ -16,7 +16,14 @@ import FlagYellow from "../img/flag-yellow.png"
 import FlagRed from "../img/flag-red.png"
 import RNPickerSelect from "react-native-picker-select"
 
-export function Items({ done: doneHeading, onPressItem }) {
+export function Items({
+  done: doneHeading,
+  onPressItem,
+  sortByDateAscending,
+  sortByDateDescending,
+  sortByPriorityAscending,
+  sortByPriorityDescending,
+}) {
   const [items, setItems] = useState(null)
   const [editingItem, setEditingItem] = useState(null)
   const [editedText, setEditedText] = useState("")
@@ -26,6 +33,51 @@ export function Items({ done: doneHeading, onPressItem }) {
   useEffect(() => {
     fetchItems(doneHeading, setItems)
   }, [forceUpdate])
+
+  useEffect(() => {
+    if (sortByDateAscending) {
+      setItems((prevItems) =>
+        prevItems.slice().sort((a, b) => {
+          const dateA = new Date(a.date + " " + a.time)
+          const dateB = new Date(b.date + " " + b.time)
+          return dateA - dateB
+        })
+      )
+    } else if (sortByDateDescending) {
+      setItems((prevItems) =>
+        prevItems.slice().sort((a, b) => {
+          const dateA = new Date(a.date + " " + a.time)
+          const dateB = new Date(b.date + " " + b.time)
+          return dateB - dateA
+        })
+      )
+    } else if (sortByPriorityAscending) {
+      setItems((prevItems) =>
+        prevItems.slice().sort((a, b) => {
+          const priorityOrder = { 0: 0, Low: 1, Medium: 2, High: 3 }
+          // Need to assign the value of 0 in case the user didn't select a priority. Priority is an optional value
+          const priorityA = a.priority || 0
+          const priorityB = b.priority || 0
+          return priorityOrder[priorityA] - priorityOrder[priorityB]
+        })
+      )
+    } else if (sortByPriorityDescending) {
+      setItems((prevItems) =>
+        prevItems.slice().sort((a, b) => {
+          const priorityOrder = { 0: 0, Low: 1, Medium: 2, High: 3 }
+          // Need to assign the value of 0 in case the user didn't select a priority. Priority is an optional value
+          const priorityA = a.priority || 0
+          const priorityB = b.priority || 0
+          return priorityOrder[priorityB] - priorityOrder[priorityA]
+        })
+      )
+    }
+  }, [
+    sortByDateAscending,
+    sortByDateDescending,
+    sortByPriorityAscending,
+    sortByPriorityDescending,
+  ])
 
   const handleEdit = (id, value, priority) => {
     setEditingItem(id)
@@ -117,19 +169,6 @@ export function Items({ done: doneHeading, onPressItem }) {
 
   if (items === null || items.length === 0) {
     return null
-  }
-
-  const getPriorityBorderColor = (priority) => {
-    switch (priority) {
-      case "Low":
-        return "green"
-      case "Medium":
-        return "orange"
-      case "High":
-        return "red"
-      default:
-        return "#000"
-    }
   }
 
   return (
