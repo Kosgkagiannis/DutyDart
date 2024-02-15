@@ -36,41 +36,57 @@ export function Items({
 
   useEffect(() => {
     if (sortByDateAscending) {
-      setItems((prevItems) =>
-        prevItems.slice().sort((a, b) => {
-          const dateA = new Date(a.date + " " + a.time)
-          const dateB = new Date(b.date + " " + b.time)
-          return dateA - dateB
-        })
-      )
+      setItems((prevItems) => {
+        if (prevItems && prevItems.length > 0) {
+          return prevItems.slice().sort((a, b) => {
+            const dateA = new Date(a.date + " " + a.time)
+            const dateB = new Date(b.date + " " + b.time)
+            return dateA - dateB
+          })
+        } else {
+          return prevItems
+        }
+      })
     } else if (sortByDateDescending) {
-      setItems((prevItems) =>
-        prevItems.slice().sort((a, b) => {
-          const dateA = new Date(a.date + " " + a.time)
-          const dateB = new Date(b.date + " " + b.time)
-          return dateB - dateA
-        })
-      )
+      setItems((prevItems) => {
+        if (prevItems && prevItems.length > 0) {
+          return prevItems.slice().sort((a, b) => {
+            const dateA = new Date(a.date + " " + a.time)
+            const dateB = new Date(b.date + " " + b.time)
+            return dateB - dateA
+          })
+        } else {
+          return prevItems
+        }
+      })
     } else if (sortByPriorityAscending) {
-      setItems((prevItems) =>
-        prevItems.slice().sort((a, b) => {
-          const priorityOrder = { 0: 0, Low: 1, Medium: 2, High: 3 }
-          // Need to assign the value of 0 in case the user didn't select a priority. Priority is an optional value
-          const priorityA = a.priority || 0
-          const priorityB = b.priority || 0
-          return priorityOrder[priorityA] - priorityOrder[priorityB]
-        })
-      )
+      setItems((prevItems) => {
+        if (prevItems && prevItems.length > 0) {
+          return prevItems.slice().sort((a, b) => {
+            const priorityOrder = { 0: 0, Low: 1, Medium: 2, High: 3 }
+            // Need to assign the value of 0 in case the user didn't select a priority. Priority is an optional value
+            const priorityA = a.priority || 0
+            const priorityB = b.priority || 0
+            return priorityOrder[priorityA] - priorityOrder[priorityB]
+          })
+        } else {
+          return prevItems
+        }
+      })
     } else if (sortByPriorityDescending) {
-      setItems((prevItems) =>
-        prevItems.slice().sort((a, b) => {
-          const priorityOrder = { 0: 0, Low: 1, Medium: 2, High: 3 }
-          // Need to assign the value of 0 in case the user didn't select a priority. Priority is an optional value
-          const priorityA = a.priority || 0
-          const priorityB = b.priority || 0
-          return priorityOrder[priorityB] - priorityOrder[priorityA]
-        })
-      )
+      setItems((prevItems) => {
+        if (prevItems && prevItems.length > 0) {
+          return prevItems.slice().sort((a, b) => {
+            const priorityOrder = { 0: 0, Low: 1, Medium: 2, High: 3 }
+            // Need to assign the value of 0 in case the user didn't select a priority. Priority is an optional value
+            const priorityA = a.priority || 0
+            const priorityB = b.priority || 0
+            return priorityOrder[priorityB] - priorityOrder[priorityA]
+          })
+        } else {
+          return prevItems
+        }
+      })
     }
   }, [
     sortByDateAscending,
@@ -78,6 +94,8 @@ export function Items({
     sortByPriorityAscending,
     sortByPriorityDescending,
   ])
+
+
 
   const handleEdit = (id, value, priority) => {
     setEditingItem(id)
