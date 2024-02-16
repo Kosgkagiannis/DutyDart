@@ -5,7 +5,7 @@ DutyDart is a task manager application designed to help users organize their tas
 ## Demo
 
 <p align="center">
-  <img src="Demo1.gif" alt="Demo 1" width="300"/> &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="Demo2.gif" alt="Demo 2" width="300"/> &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="Demo3.gif" alt="Demo 3" width="300"/>
+  <img src="Demo1.gif" alt="Demo 1" width="250"/> &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="Demo2.gif" alt="Demo 2" width="250"/> &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="Demo3.gif" alt="Demo 3" width="250"/>
 </p>
