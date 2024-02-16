@@ -14,7 +14,9 @@ import Icon from "react-native-vector-icons/FontAwesome"
 import FlagGreen from "../img/flag-green.png"
 import FlagYellow from "../img/flag-yellow.png"
 import FlagRed from "../img/flag-red.png"
+import DartHit from "../img/dart-hit.gif"
 import RNPickerSelect from "react-native-picker-select"
+import * as Animatable from "react-native-animatable"
 
 export function Items({
   done: doneHeading,
@@ -23,16 +25,27 @@ export function Items({
   sortByDateDescending,
   sortByPriorityAscending,
   sortByPriorityDescending,
+  newlyAddedTaskId,
 }) {
   const [items, setItems] = useState(null)
   const [editingItem, setEditingItem] = useState(null)
   const [editedText, setEditedText] = useState("")
   const [editedPriority, setEditedPriority] = useState("")
   const [forceUpdate, setForceUpdate] = useState(0)
+  const [showGIF, setShowGIF] = useState(false)
 
   useEffect(() => {
     fetchItems(doneHeading, setItems)
   }, [forceUpdate])
+
+  useEffect(() => {
+    if (newlyAddedTaskId) {
+      setShowGIF(true)
+      setTimeout(() => {
+        setShowGIF(false)
+      }, 1500)
+    }
+  }, [newlyAddedTaskId])
 
   useEffect(() => {
     if (sortByDateAscending) {
@@ -94,8 +107,6 @@ export function Items({
     sortByPriorityAscending,
     sortByPriorityDescending,
   ])
-
-
 
   const handleEdit = (id, value, priority) => {
     setEditingItem(id)
@@ -193,80 +204,86 @@ export function Items({
     <View style={styles.container}>
       {items.map(({ id, done, value, date, time, priority }) => (
         <View key={id} style={styles.itemContainer}>
-          {editingItem === id ? (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <TextInput
-                style={styles.input}
-                value={editedText}
-                onChangeText={setEditedText}
-              />
-              <View style={{ flex: 1 }}>
-                <RNPickerSelect
-                  style={styles.input}
-                  onValueChange={(value) => setEditedPriority(value)}
-                  items={[
-                    { label: "Low", value: "Low" },
-                    { label: "Medium", value: "Medium" },
-                    { label: "High", value: "High" },
-                  ]}
-                  value={editedPriority}
-                  placeholder={{ label: "Priority", value: null }}
-                />
-              </View>
-              <Button title="Save" onPress={() => handleSaveEdit(id)} />
-            </View>
+          {id === newlyAddedTaskId && showGIF ? (
+            <Image source={DartHit} style={styles.gif} />
           ) : (
-            <View
-              style={[
-                styles.touchable,
-                { backgroundColor: done ? "#1c9963" : "#fff" },
-              ]}
-            >
-              <Text style={styles.textContainer}>{value}</Text>
-              <Text style={styles.textContainer}>
-                {date} {time}
-              </Text>
-              {priority && (
+            <View key={id} style={styles.itemContainer}>
+              {editingItem === id ? (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <TextInput
+                    style={styles.input}
+                    value={editedText}
+                    onChangeText={setEditedText}
+                  />
+                  <View style={{ flex: 1 }}>
+                    <RNPickerSelect
+                      style={styles.input}
+                      onValueChange={(value) => setEditedPriority(value)}
+                      items={[
+                        { label: "Low", value: "Low" },
+                        { label: "Medium", value: "Medium" },
+                        { label: "High", value: "High" },
+                      ]}
+                      value={editedPriority}
+                      placeholder={{ label: "Priority", value: null }}
+                    />
+                  </View>
+                  <Button title="Save" onPress={() => handleSaveEdit(id)} />
+                </View>
+              ) : (
                 <View
                   style={[
-                    styles.textContainer,
-                    { flexDirection: "row", alignItems: "center" },
+                    styles.touchable,
+                    { backgroundColor: done ? "#1c9963" : "#fff" },
                   ]}
                 >
-                  <Text>Priority: {priority}</Text>
-                  {priority === "Low" && (
-                    <Image source={FlagGreen} style={styles.flagImage} />
+                  <Text style={styles.textContainer}>{value}</Text>
+                  <Text style={styles.textContainer}>
+                    {date} {time}
+                  </Text>
+                  {priority && (
+                    <View
+                      style={[
+                        styles.textContainer,
+                        { flexDirection: "row", alignItems: "center" },
+                      ]}
+                    >
+                      <Text>Priority: {priority}</Text>
+                      {priority === "Low" && (
+                        <Image source={FlagGreen} style={styles.flagImage} />
+                      )}
+                      {priority === "Medium" && (
+                        <Image source={FlagYellow} style={styles.flagImage} />
+                      )}
+                      {priority === "High" && (
+                        <Image source={FlagRed} style={styles.flagImage} />
+                      )}
+                    </View>
                   )}
-                  {priority === "Medium" && (
-                    <Image source={FlagYellow} style={styles.flagImage} />
-                  )}
-                  {priority === "High" && (
-                    <Image source={FlagRed} style={styles.flagImage} />
-                  )}
+
+                  <View style={styles.buttonContainer}>
+                    <Button
+                      title="Edit"
+                      onPress={() => handleEdit(id, value, priority)}
+                    />
+                    {!done && (
+                      <>
+                        <Button
+                          title="Mark as completed"
+                          onPress={() => handleMarkAsCompleted(id)}
+                          color="green"
+                        />
+                        <Icon
+                          name="trash"
+                          size={20}
+                          color="red"
+                          onPress={() => handleDeleteConfirmation(id)}
+                        />
+                      </>
+                    )}
+                  </View>
                 </View>
               )}
-
-              <View style={styles.buttonContainer}>
-                <Button
-                  title="Edit"
-                  onPress={() => handleEdit(id, value, priority)}
-                />
-                {!done && (
-                  <>
-                    <Button
-                      title="Mark as completed"
-                      onPress={() => handleMarkAsCompleted(id)}
-                      color="green"
-                    />
-                    <Icon
-                      name="trash"
-                      size={20}
-                      color="red"
-                      onPress={() => handleDeleteConfirmation(id)}
-                    />
-                  </>
-                )}
-              </View>
             </View>
           )}
         </View>
@@ -308,6 +325,11 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginLeft: 5,
+  },
+  gif: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
   },
 })
 

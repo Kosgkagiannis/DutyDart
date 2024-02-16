@@ -25,6 +25,7 @@ const MainTasksScreen = ({ navigation }) => {
   const [sortByPriorityDescending, setSortByPriorityDescending] =
     useState(false)
   const [isSortExpanded, setIsSortExpanded] = useState(false)
+  const [newlyAddedTaskId, setNewlyAddedTaskId] = useState(null)
 
   useEffect(() => {
     db.transaction((tx) => {
@@ -33,7 +34,6 @@ const MainTasksScreen = ({ navigation }) => {
       )
     })
   }, [])
-
 
   const toggleSortExpansion = () => {
     setIsSortExpanded(!isSortExpanded)
@@ -80,8 +80,9 @@ const MainTasksScreen = ({ navigation }) => {
         tx.executeSql(
           "INSERT INTO items (done, value, date, time, priority) VALUES (0, ?, ?, ?, ?)",
           [text, currentDate, currentTime, priority],
-          () => {
+          (_, { insertId }) => {
             console.log("Task added successfully")
+            setNewlyAddedTaskId(insertId)
           },
           (_, error) => {
             console.log("Error adding task:", error)
@@ -195,6 +196,7 @@ const MainTasksScreen = ({ navigation }) => {
           sortByDateDescending={sortByDateDescending}
           sortByPriorityAscending={sortByPriorityAscending}
           sortByPriorityDescending={sortByPriorityDescending}
+          newlyAddedTaskId={newlyAddedTaskId}
         />
       </ScrollView>
     </View>
@@ -205,6 +207,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    flexDirection: "column",
+    justifyContent: "flex-start",
   },
   priorityContainer: {
     flex: 1,
@@ -261,6 +265,10 @@ const styles = StyleSheet.create({
   },
   activeSortButton: {
     backgroundColor: "#0056b3",
+  },
+  filterButton: {
+    alignSelf: "flex-end",
+    marginRight: 10,
   },
 })
 
